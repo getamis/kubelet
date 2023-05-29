@@ -1,9 +1,9 @@
-FROM docker.io/alpine:3.13 AS fetcher
+FROM docker.io/alpine:3.18 AS fetcher
 LABEL maintainer="Dalton Hubble <dghubble@gmail.com>"
 
-ARG KUBELET=v1.21.0
+ARG KUBELET=v1.27.2
 ARG ARCH=amd64
-ARG SHA=c1831c708109c31b3878e5a9327ea4b9e546504d0b6b00f3d43db78b5dd7d5114d32ac24a9a505f9cadbe61521f0419933348d2cd309ed8cfe3987d9ca8a7e2c
+ARG SHA=2a05c3ebcec8bce9ca2a7c835617f0b85dbf11a07d39c5b002b5389a45465807c437dd22d975c60e680ee34f3bc00e460d848927a8fa2c1543ec97fb66f50477
 
 RUN apk add curl && \
   curl -L https://dl.k8s.io/${KUBELET}/kubernetes-node-linux-${ARCH}.tar.gz -o node.tar.gz && \
@@ -11,9 +11,10 @@ RUN apk add curl && \
   tar xzf node.tar.gz kubernetes/node/bin/kubectl kubernetes/node/bin/kubelet
 
 
-FROM us.gcr.io/k8s-artifacts-prod/build-image/debian-iptables:buster-v1.6.0
+FROM us.gcr.io/k8s-artifacts-prod/build-image/debian-iptables:bullseye-v1.5.5
 LABEL maintainer="Dalton Hubble <dghubble@gmail.com>"
 
+RUN clean-install --allow-change-held-packages libcap2
 RUN clean-install \
   bash \
   ca-certificates \
